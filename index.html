@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NASA Datasets & Papers Explorer</title>
+<style>
+  body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      background-color: #f4f6f9; 
+      margin: 0; 
+      padding: 30px; 
+      color: #333;
+  }
+  h1 { text-align: center; color: #0b3d91; /* NASA Blue */ }
+  p.subtitle { text-align: center; color: #666; margin-bottom: 30px;}
+  
+  .search-container { text-align: center; margin-bottom: 40px; }
+  #searchInput { 
+      width: 100%; 
+      max-width: 600px; 
+      padding: 15px; 
+      font-size: 16px; 
+      border: 1px solid #ccc;
+      border-radius: 25px;
+      outline: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  .grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+      gap: 25px; 
+      max-width: 1200px;
+      margin: 0 auto;
+  }
+  
+  .card { 
+      background: white; 
+      padding: 25px; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+      transition: transform 0.2s;
+  }
+  .card:hover { transform: translateY(-5px); }
+  
+  .tag { 
+      background: #fc3d21; /* NASA Red */
+      color: white;
+      padding: 4px 10px; 
+      border-radius: 15px; 
+      font-size: 0.8em; 
+      font-weight: bold;
+      margin-bottom: 15px; 
+      display: inline-block; 
+  }
+  
+  .card h2 { font-size: 1.3em; margin-top: 0; margin-bottom: 10px; }
+  .card h2 a { color: #0b3d91; text-decoration: none; }
+  .card h2 a:hover { text-decoration: underline; }
+  
+  h3 { font-size: 1em; color: #444; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+  ul { padding-left: 20px; margin-top: 10px;}
+  li { margin-bottom: 8px; font-size: 0.95em;}
+  li a { color: #0066cc; text-decoration: none; }
+  li a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>NASA Datasets & Published Papers</h1>
+<p class="subtitle">Explore datasets and scientific research from Mars and the Moon.</p>
+
+<div class="search-container">
+  <input type="text" id="searchInput" placeholder="Search by planet, dataset name, or paper title...">
+</div>
+
+<div class="grid" id="dashboard"></div>
+
+<script src="data.js"></script>
+
+<script>
+  function renderCards(data) {
+    const dashboard = document.getElementById('dashboard');
+    dashboard.innerHTML = '';
+    
+    if(data.length === 0) {
+        dashboard.innerHTML = '<p style="text-align:center; grid-column: 1 / -1;">No results found.</p>';
+        return;
+    }
+
+    data.forEach(item => {
+      // Create HTML for the bulleted list of papers
+      let papersHtml = item.papers.map(p => `<li><a href="${p.url}" target="_blank">${p.title}</a></li>`).join('');
+      
+      // Create the card element
+      let card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <span class="tag">${item.planet}</span>
+        <h2><a href="${item.link}" target="_blank">${item.dataset}</a></h2>
+        <h3>Published Papers</h3>
+        <ul>${papersHtml}</ul>
+      `;
+      dashboard.appendChild(card);
+    });
+  }
+
+  // Add search functionality
+  document.getElementById('searchInput').addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase();
+    const filtered = nasaData.filter(item => 
+      item.dataset.toLowerCase().includes(term) || 
+      item.planet.toLowerCase().includes(term) ||
+      item.papers.some(p => p.title.toLowerCase().includes(term))
+    );
+    renderCards(filtered);
+  });
+
+  // Initial render when the page loads
+  renderCards(nasaData);
+</script>
+</body>
+</html>
