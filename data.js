@@ -83,9 +83,9 @@ const nasaData = [
     papers: [
       { title: "Elemental Composition and Chemical Evolution of Geologic Material in Gale Crater, Mars: APXS Results", url: "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020JE006536" },
       { title: "Potassium-rich sandstone within the Gale impact crater, Mars: The APXS perspective", url: "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2016JE005055" },
-      { title: "APXS Derived Geochemistry of Shallow Water Lens Bodies Within the Mirador Formation, Gale Crater", url: "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2025JE009001" },
-      { title: "Dusty Rocks in Gale Crater: Assessing Areal Coverage and Separating Dust and Rock Contributions in APXS Analyses", url: "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018JE005553" },
-      { title: "Mars Science Laboratory alpha particle X-ray spectrometer trace elements: Situational sensitivity", url: "https://www.sciencedirect.com/science/article/pii/S0094576519312445" },
+      { title: "APXS Derived Geochemistry of Shallow Water Lens Bodies Within the Mirador Formation", url: "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2025JE009001" },
+      { title: "Dusty Rocks in Gale Crater: Assessing Areal Coverage and Separating Dust and Rock Contributions", url: "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018JE005553" },
+      { title: "Mars Science Laboratory alpha particle X-ray spectrometer trace elements", url: "https://www.sciencedirect.com/science/article/pii/S0094576519312445" },
       { title: "A global Mars dust composition refined by the Alpha-Particle X-ray Spectrometer in Gale Crater", url: "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GL066675" }
     ]
   },
@@ -126,7 +126,7 @@ const nasaData = [
       { title: "Measuring subsurface water distribution using the Dynamic Albedo of Neutrons instrument on Mars Science Laboratory", url: "https://www.sciencedirect.com/science/article/abs/pii/S0168900208005792" },
       { title: "Analysis of Active Neutron Measurements From the Mars Science Laboratory Dynamic Albedo of Neutrons Instrument", url: "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2019JE006264" },
       { title: "Observed diurnal variations in Mars Science laboratory Dynamic ALbedo of Neutrons passive mode data", url: "https://www.sciencedirect.com/science/article/abs/pii/S0168900218302882" },
-      { title: "Active neutron sensing of the Martian surface with the DAN experiment onboard the NASA Curiosity rover", url: "https://link.springer.com/article/10.1134/s1063773716040058" }
+      { title: "Active neutron sensing of the Martian surface with the DAN experiment", url: "https://link.springer.com/article/10.1134/s1063773716040058" }
     ]
   },
   {
@@ -160,7 +160,7 @@ const nasaData = [
     planet: "Mars",
     dataset: "Compact Reconnaissance Imaging Spectrometer for Mars (CRISM)",
     link: "https://pds-geosciences.wustl.edu/missions/mro/crism.htm",
-    papers: [] // Papers published in another document
+    papers: [] 
   },
   {
     planet: "Mars",
@@ -192,14 +192,13 @@ const nasaData = [
       { title: "Photochemical escape of oxygen from Mars: First results from MAVEN in situ data", url: "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2016JA023525" },
       { title: "Characterizing Atmospheric Escape from Mars Today and Through Time, with MAVEN", url: "https://link.springer.com/article/10.1007/s11214-015-0165-8" },
       { title: "The spatial distribution of planetary ion fluxes near Mars observed by MAVEN", url: "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2015GL065293" },
-      { title: "Application of MAVEN Accelerometer and Attitude Control Data to Mars Atmospheric Characterization", url: "https://link.springer.com/article/10.1007/s11214-014-0095-x" },
-      { title: "MAVEN observations of ionospheric irregularities at Mars", url: "https://scholar.google.com/scholar?start=20&q=MAVEN+Mars+data&hl=en&as_sdt=0,44" }
+      { title: "Application of MAVEN Accelerometer and Attitude Control Data to Mars Atmospheric Characterization", url: "https://link.springer.com/article/10.1007/s11214-014-0095-x" }
     ]
   },
   {
     planet: "Mars",
     dataset: "Mars Climate Sounder",
-    link: "Mars Reconnaissance Orbiter Archive",
+    link: "#",
     papers: [
       { title: "The radiative impact of water ice clouds from a reanalysis of Mars Climate Sounder data", url: "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2014GL060235" },
       { title: "Mars Climate Sounder Observation of Mars’ 2018 Global Dust Storm", url: "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2019GL083931" },
@@ -347,39 +346,40 @@ const nasaData = [
 
 // ================= LOGIC =================
 
-// Function to generate the cards
+// Function to generate the cards safely
 function renderCards(data) {
   const dashboard = document.getElementById('dashboard');
   dashboard.innerHTML = '';
   
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
       dashboard.innerHTML = '<p class="no-results">No datasets or papers matched your search.</p>';
       return;
   }
 
   data.forEach(item => {
-    // Generate the list of papers
+    // Safely generate the list of papers
     let papersHtml = "";
     if (item.papers && item.papers.length > 0) {
       papersHtml = item.papers.map(p => {
-        let paperLink = p.url !== "#" ? `<a href="${p.url}" target="_blank">${p.title}</a>` : p.title;
+        let paperLink = (p.url && p.url !== "#") ? `<a href="${p.url}" target="_blank">${p.title}</a>` : p.title;
         return `<li>${paperLink}</li>`;
       }).join('');
     } else {
-      papersHtml = "<li><em>No specific papers listed in document.</em></li>";
+      papersHtml = "<li><em>No specific papers listed.</em></li>";
     }
     
-    // Assign correct tag color class
-    let planetClass = item.planet.toLowerCase() === 'mars' ? 'mars' : 'moon';
+    // Assign correct tag color class based on the planet safely
+    let safePlanet = item.planet ? item.planet.toLowerCase() : 'unknown';
+    let planetClass = safePlanet === 'mars' ? 'mars' : (safePlanet === 'moon' ? 'moon' : '');
 
-    // Set Dataset link (if available)
-    let datasetLink = item.link !== "#" ? `<a href="${item.link}" target="_blank">${item.dataset}</a>` : item.dataset;
+    // Set Dataset link safely
+    let datasetLink = (item.link && item.link !== "#") ? `<a href="${item.link}" target="_blank">${item.dataset}</a>` : item.dataset;
 
     // Create the card element
     let card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-      <span class="tag ${planetClass}">${item.planet}</span>
+      <span class="tag ${planetClass}">${item.planet || 'Dataset'}</span>
       <h2>${datasetLink}</h2>
       <h3>Published Papers</h3>
       <ul>${papersHtml}</ul>
@@ -388,14 +388,25 @@ function renderCards(data) {
   });
 }
 
-// Event listener for the live-search bar
+// CRASH-PROOF event listener for the live-search bar
 document.getElementById('searchInput').addEventListener('input', function(e) {
-  const term = e.target.value.toLowerCase();
+  // .trim() handles accidental spaces at the end of the input (like "mars ")
+  const term = e.target.value.toLowerCase().trim(); 
   
   const filtered = nasaData.filter(item => {
-    const matchDataset = item.dataset.toLowerCase().includes(term);
-    const matchPlanet = item.planet.toLowerCase().includes(term);
-    const matchPaper = item.papers.some(p => p.title.toLowerCase().includes(term));
+    // Safely check dataset and planet names (fallback to empty string if missing)
+    const safeDataset = (item.dataset || "").toLowerCase();
+    const safePlanet = (item.planet || "").toLowerCase();
+    
+    const matchDataset = safeDataset.includes(term);
+    const matchPlanet = safePlanet.includes(term);
+    
+    // Safely check papers array and titles
+    const safePapers = item.papers || [];
+    const matchPaper = safePapers.some(p => 
+      (p.title || "").toLowerCase().includes(term)
+    );
+    
     return matchDataset || matchPlanet || matchPaper;
   });
   
